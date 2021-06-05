@@ -1,0 +1,13 @@
+regenerationDelay: 10 #seconds
+timeUntilStone: 10 #seconds
+delayWobble: 5 # potential randomness
+materialsToRegen:
+  - REDSTONE_ORE
+  - DIAMOND_ORE
+  - COAL_ORE
+  - IRON_ORE
+  - LAPIS_ORE
+  - GOLD_ORE
+  - EMERALD_ORE
+  - LEGACY_GLOWING_REDSTONE_ORE
+temporaryMaterial: STONE

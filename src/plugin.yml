@@ -1,0 +1,9 @@
+name: OreRegeneration
+main: net.andrewcpu.OreRegen
+version: 1.0
+author: Andrewcpu
+commands:
+  oreregen:
+    permission: oreregen.config
+    permission-message: Go away.
+    usage: oreregen help
