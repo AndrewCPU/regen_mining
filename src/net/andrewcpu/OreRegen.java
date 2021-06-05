@@ -2,9 +2,11 @@ package net.andrewcpu;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -19,8 +21,10 @@ public class OreRegen extends JavaPlugin {
     private int delayInSeconds = 0;
     private int delayWobble = 0;
     private int timeToStone = 0;
+    private int radius = 0;
     private List<Material> regenMaterial;
     private Material temporaryMaterial;
+    private Location centerLocation;
     public void onEnable(){
         this.miningListener = new MiningListener(this);
         getServer().getPluginManager().registerEvents(this.miningListener, this);
@@ -45,13 +49,14 @@ public class OreRegen extends JavaPlugin {
         validCommands.add("^ How long after breaking the block before it becomes " + temporaryMaterial.toString());
         validCommands.add("set temporaryMaterial spigotMaterial");
         validCommands.add("^ The block inbetween air and ore");
+        validCommands.add("set radius distanceInBlocksFromCurrentLocation");
+        validCommands.add("^ How far away from your current location do you want ores to regenerate");
         validCommands.add("get regenMaterials");
         validCommands.add("^ Displays the blocks that will regenerate when broken");
         validCommands.add("add material spigotMaterial");
         validCommands.add("^ Add a new block to the list of regenerating materials");
         validCommands.add("remove material spigotMaterial");
         validCommands.add("^ Remove a block from the list of regenerating materials");
-
         if(sender.hasPermission("oreregen.config")){
             if(command.getName().equalsIgnoreCase("oreregen")){
                 if(args.length == 0 || (args.length == 1 && args[0].equalsIgnoreCase("help"))){
@@ -135,6 +140,26 @@ public class OreRegen extends JavaPlugin {
                             sender.sendMessage(header + ChatColor.GREEN + "Successfully updated " + args[1]);
                             return true;
                         }
+                        else if (args[1].equalsIgnoreCase("radius")){
+                            int radius;
+                            Player player;
+                            try{
+                                radius = Integer.parseInt(args[2]);
+                                player = (Player)sender;
+                            }catch (Exception ex){
+                                sender.sendMessage(header + ChatColor.RED + "Please enter a whole number.");
+                                return true;
+                            }
+                            getConfig().set("radius", radius);
+                            getConfig().set("Center.X", player.getLocation().getBlockX());
+                            getConfig().set("Center.Y", player.getLocation().getBlockY());
+                            getConfig().set("Center.Z", player.getLocation().getBlockZ());
+                            getConfig().set("Center.World", player.getLocation().getWorld().getName());
+                            centerLocation = player.getLocation();
+                            saveConfig();
+                            sender.sendMessage(header + ChatColor.GREEN + "Successfully set center point and radius to your current location.");
+                            return true;
+                        }
                         else{
                             sender.sendMessage(header + ChatColor.RED + "Invalid command.");
                             return true;
@@ -208,6 +233,26 @@ public class OreRegen extends JavaPlugin {
             getConfig().set("ResetBlocksIfCrash", new ArrayList<String>());
             saveConfig();
         }
+        if(getConfig().contains("Center")){
+            centerLocation = new Location(Bukkit.getWorld(getConfig().getString("Center.World")), getConfig().getInt("Center.X"),  getConfig().getInt("Center.Y"),  getConfig().getInt("Center.Z"));
+        }
+        else{
+            centerLocation = Bukkit.getWorlds().get(0).getSpawnLocation();
+        }
+        if(getConfig().contains("Radius")){
+            radius = getConfig().getInt("Radius");
+        }
+        else{
+            radius = 100;
+        }
+    }
+
+    public int getRadius() {
+        return radius;
+    }
+
+    public Location getCenterLocation() {
+        return centerLocation;
     }
 
     public int getDelayInSeconds() {

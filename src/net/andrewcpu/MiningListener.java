@@ -47,6 +47,8 @@ public class MiningListener implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event){
         Location location = event.getBlock().getLocation();
+        if(location.distance(main.getCenterLocation()) > main.getRadius())
+            return;
         List<String> needToRegen = new ArrayList<>();
         if(main.getConfig().contains("ResetBlocksIfCrash")){
             needToRegen = main.getConfig().getStringList("ResetBlocksIfCrash");
@@ -70,7 +72,7 @@ public class MiningListener implements Listener {
                     event.getBlock().getWorld().spawnParticle(Particle.REDSTONE, event.getBlock().getLocation(), 25, 1, 1, 1, dustOptions);
                     removeFromNeedRegen(event.getBlock().getLocation());
                 }, (main.getDelayInSeconds() + wobbleTime) * 20);
-            }, (main.getTimeToStone() + wobbleTime) * 20);
+            }, main.getTimeToStone() == 0 ? 0 : (main.getTimeToStone() + wobbleTime) * 20);
         }
     }
 }
