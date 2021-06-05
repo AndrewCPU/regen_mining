@@ -156,6 +156,7 @@ public class OreRegen extends JavaPlugin {
                             getConfig().set("Center.Z", player.getLocation().getBlockZ());
                             getConfig().set("Center.World", player.getLocation().getWorld().getName());
                             centerLocation = player.getLocation();
+                            this.radius = radius;
                             saveConfig();
                             sender.sendMessage(header + ChatColor.GREEN + "Successfully set center point and radius to your current location.");
                             return true;
